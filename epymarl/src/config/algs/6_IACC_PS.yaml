@@ -1,0 +1,78 @@
+######
+#
+# IACC-PS
+#
+# How:
+# * Use CV critic (with parameter sharing): ./src/modules/critics/cv.py
+#   => INPUT:  (n_parallel_envs, n_timesteps, n_agents, (n_obs x n_agents + one-hot agent ID))
+#   => INTER1: (n_parallel_envs, n_timesteps, n_agents, hidden_dim)
+#   => INTER2: (n_parallel_envs, n_timesteps, n_agents, hidden_dim)
+#   => OUTPUT: (n_parallel_envs, n_timesteps, n_agents, 1)
+# * Use Actor "Agent RNN" (with RNN set to False): ./src/modules/agents/rnn_agent.py
+#   => INPUT:  (n_parallel_envs x n_agents, (n_obs + one-hot agent ID))
+#   => INTER1: (n_parallel_envs x n_agents, hidden_dim)
+#   => INTER2: (n_parallel_envs x n_agents, hidden_dim)
+#   => OUTPUT: (n_parallel_envs x n_agents, n_actions)
+#
+# * The critic is centralized as all observations are merged
+#     before being passed through the critic.
+# * The actor is decentralized as each agent has its own
+#     observation and output.
+# * There is Parameter Sharing between agents (same NN for all agents)
+# * There is a one-hot encoding of the agent ID in the observation allowing
+#       distinct outputs for each agent
+######
+
+# --- pymarl options ---
+runner: "parallel"          
+mac: "basic_mac"            
+batch_size_run: 2           
+test_nepisode: 4        
+test_interval: 1000         
+test_greedy: True           
+log_interval: 100         
+runner_log_interval: 100  
+learner_log_interval: 100  
+t_max: 5000                 
+use_cuda: False             
+buffer_cpu_only: True       
+
+# --- Logging options ---
+use_tensorboard: False      
+save_model: False           
+save_model_interval: 500000 
+checkpoint_path: ""         
+evaluate: False             
+render: False               
+load_step: 0                
+save_replay: False          
+local_results_path: "epymarl/results"
+
+# --- MAPPO specific parameters ---
+action_selector: "soft_policies"
+mask_before_softmax: True
+buffer_size: 10
+batch_size: 10
+target_update_interval_or_tau: 200
+lr: 0.00012
+
+# --- agent specific parameters ---
+agent: "rnn"
+obs_agent_id: True
+obs_last_action: False
+obs_individual_obs: False
+
+# --- Experiment running params ---
+agent_output_type: "pi_logits"
+learner: "ppo_learner"
+entropy_coef: 0.01
+use_rnn: False
+standardise_returns: True
+standardise_rewards: True
+q_nstep: 6
+critic_type: "cv_critic"
+epochs: 4
+eps_clip: 0.2
+name: "6_IACC_PS"
+
+hidden_dim: 16

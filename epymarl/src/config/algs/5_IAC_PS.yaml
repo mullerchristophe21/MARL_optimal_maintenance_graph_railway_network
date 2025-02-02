@@ -1,0 +1,75 @@
+######
+#
+# IPPO for IAC_PS
+#
+# How:
+# * Use AC critic (with parameter sharing): ./src/modules/critics/ac.py
+#   => INPUT:  (n_parallel_envs, n_timesteps, n_agents, (n_obs + one-hot agent ID))
+#   => INTER1: (n_parallel_envs, n_timesteps, n_agents, hidden_dim)
+#   => INTER2: (n_parallel_envs, n_timesteps, n_agents, hidden_dim)
+#   => OUTPUT: (n_parallel_envs, n_timesteps, n_agents, 1)
+# * Use Actor "Agent RNN" (with RNN set to False): ./src/modules/agents/rnn_agent.py
+#   => INPUT:  (n_parallel_envs x n_agents, (n_obs + one-hot agent ID))
+#   => INTER1: (n_parallel_envs x n_agents, hidden_dim)
+#   => INTER2: (n_parallel_envs x n_agents, hidden_dim)
+#   => OUTPUT: (n_parallel_envs x n_agents, n_actions)
+#
+# * The parameters are shared between agents (same NN for all agents)
+# * There is a one-hot encoding of the agent ID in the observation allowing
+#       distinct outputs for each agent
+######
+
+
+# --- pymarl options ---
+runner: "parallel"          
+mac: "basic_mac"            
+batch_size_run: 2           
+test_nepisode: 4        
+test_interval: 1000         
+test_greedy: True           
+log_interval: 100         
+runner_log_interval: 100  
+learner_log_interval: 100  
+t_max: 5000                 
+use_cuda: False             
+buffer_cpu_only: True       
+
+# --- Logging options ---
+use_tensorboard: False      
+save_model: False           
+save_model_interval: 500000 
+checkpoint_path: ""         
+evaluate: False             
+render: False               
+load_step: 0                
+save_replay: False          
+local_results_path: "epymarl/results"
+
+# --- IPPO specific parameters ---
+action_selector: "soft_policies"
+mask_before_softmax: True
+buffer_size: 10
+batch_size: 10
+target_update_interval_or_tau: 0.01
+lr: 0.00012
+
+# --- agent specific parameters ---
+agent: "rnn"
+obs_agent_id: True          # => Include agent ID in observation (one-hot encoded)
+obs_last_action: False
+obs_individual_obs: False
+
+# --- Experiment running params ---
+agent_output_type: "pi_logits"
+learner: "ppo_learner"
+entropy_coef: 0.01
+standardise_returns: True
+standardise_rewards: True
+use_rnn: False
+q_nstep: 6
+critic_type: "ac_critic"
+epochs: 4
+eps_clip: 0.2
+name: "5_IAC_PS"
+
+hidden_dim: 17

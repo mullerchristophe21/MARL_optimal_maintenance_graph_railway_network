@@ -1,0 +1,28 @@
+exclude: null
+grid-search:
+
+  "--config":
+    - "r22_transformer_baseline_test_search"
+
+  lr:
+    - 0.00007
+    - 0.00012
+    - 0.00020
+
+  n_layers_transformers:
+    - 2
+    - 4
+    - 6
+
+  pos_enc_dim:
+    - 5
+
+
+
+  t_max:
+    - 20000
+
+    
+grid-search-groups:
+  env0:
+    - "--env-config": "railway_maintenance_g2_jitter"

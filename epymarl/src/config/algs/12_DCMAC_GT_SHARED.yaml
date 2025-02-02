@@ -1,0 +1,78 @@
+######
+#
+# MAPPO for DCMAC with Graph Transformer (shared for critic and agent)
+#
+######
+
+# --- pymarl options ---
+runner: "parallel"          
+mac: "basic_mac"            
+batch_size_run: 2           
+test_nepisode: 4        
+test_interval: 1000         
+test_greedy: True           
+log_interval: 100         
+runner_log_interval: 100  
+learner_log_interval: 100  
+t_max: 5000                 
+use_cuda: False             
+buffer_cpu_only: True       
+
+# --- Logging options ---
+use_tensorboard: False      
+save_model: False           
+save_model_interval: 500000 
+checkpoint_path: ""         
+evaluate: False             
+render: False               
+load_step: 0                
+save_replay: False          
+local_results_path: "epymarl/results"
+
+# --- MAPPO specific parameters ---
+action_selector: "soft_policies"
+mask_before_softmax: True
+buffer_size: 4
+batch_size: 4
+target_update_interval_or_tau: 200
+lr: 0.00013
+
+# --- Agent parameters ---
+agent: "actor_transformer"
+hidden_dim: 8
+obs_agent_id: False
+obs_last_action: False
+obs_individual_obs: False
+
+# --- Experiment running params ---
+name: "9_DCMAC_GT_ALL"
+action_selector: "soft_policies"
+mask_before_softmax: True
+target_update_interval_or_tau: 0.01
+obs_individual_obs: False
+agent_output_type: "pi_logits"
+learner: "ppo_learner_shared"    # => special ppo to learn critic and agent with same parameters (GT)
+entropy_coef: 0.01
+standardise_returns: True
+standardise_rewards: True
+use_rnn: False
+q_nstep: 6
+critic_type: "critic_transformer"
+epochs: 4
+eps_clip: 0.2
+use_shared_gnn: False
+use_shared_transformer: True       # => Use the same GT for critic and agent
+
+pos_enc_dim: 8                      # => Positional encoding dimension
+encoder_dim_transformer: 12         # => Transformer encoder dimension
+num_heads: 2                        # => Number of heads in the transformer encoder     
+layer_norm: True                    # => Use layer normalization
+batch_norm: False                   # => Use batch normalization       
+residual: True                      # => Use residual connections
+use_bias: False                     # => Use bias in the transformer encoder
+n_layers_transformers: 4            # => Number of layers in the transformer encoder
+
+use_graph_input: True               # => Concatenate observation with graph specific features
+use_6_graph_input: False            # => Use all of these features, not only the 6 most important ones
+transformer_encoder_concat: True    # => Concatenate the transformer encoder output with the observation
+neigh_attention: False              # => Use attention over all nodes, not only neighbors 
